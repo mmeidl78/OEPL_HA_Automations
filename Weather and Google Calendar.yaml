@@ -196,7 +196,7 @@ actions:
           "y": 130
           size: 30
         - type: text
-          value: "{{ states('sensor.wohnzimmer_temperatur_2') | int }}°C"
+          value: "{{ states('SENSOR.LIVINGROOMTEMPERATURE') | int }}°C"
           x: 10
           "y": 164
           size: 16
@@ -213,7 +213,7 @@ actions:
           width: 1
           fill: black
         - type: text
-          value: "{{ states('sensor.terrasse_temperatur') | int }}°C"
+          value: "{{ states('SENSOR.OUTDOORTEMPERATURE') | int }}°C"
           x: 80
           "y": 164
           size: 16
