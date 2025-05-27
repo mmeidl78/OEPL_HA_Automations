@@ -1,0 +1,139 @@
+alias: ABFALLKALENDER
+description: ""
+triggers:
+  - trigger: time
+    at: "00:00:01"
+conditions:
+  - condition: time
+    after: "04:00:00"
+    before: "22:00:00"
+    enabled: true
+actions:
+  - alias: Send generated Agenda to OEPL
+    metadata: {}
+    data:
+      rotate: 0
+      dry-run: false
+      payload:
+        - type: text
+          value: "{{ as_timestamp(now()) | timestamp_custom('%d%m%H%M') }}"
+          x: 332
+          "y": 2
+          size: 10
+        - type: text
+          value: Abfallkalender
+          x: 112
+          "y": 4
+          size: 16
+          color: black
+          font: ../../media/Bungee.ttf
+        - type: line
+          x_start: 0
+          x_end: 384
+          y_start: 25
+          y_end: 25
+          width: 1
+          fill: black
+        - type: text
+          value: Biomüll
+          x: 28
+          "y": 80
+          size: 16
+          color: black
+        - type: icon
+          value: bio
+          x: 41
+          "y": 30
+          size: 40
+        - type: text
+          value: "{{ states('sensor.biomull') }}"
+          x: >-
+            {{ ((128 - (states('sensor.biomull') | length * 7.8)) / 2) | int ~
+            '' }}
+          "y": 110
+          size: 20
+          font: ../../media/Abel-Regular.ttf
+        - type: text
+          value: "{{ states('sensor.biomull_datum') }}"
+          x: >-
+            {{ ((128 - (states('sensor.biomull_datum') | length * 8.5)) / 2) |
+            int ~ '' }}
+          "y": 145
+          size: 20
+          font: ../../media/Abel-Regular.ttf
+        - type: line
+          x_start: 128
+          x_end: 128
+          y_start: 35
+          y_end: 175
+          width: 1
+          dashed: true
+          fill: black
+        - type: text
+          value: Restmüll
+          x: 50%
+          "y": 87
+          size: 16
+          anchor: mm
+          color: black
+        - type: icon
+          value: trash-can-outline
+          x: 173
+          "y": 35
+          size: 40
+        - type: text
+          value: "{{ states('sensor.restmull') }} "
+          x: 50%
+          anchor: mm
+          "y": 118
+          size: 20
+          color: black
+          font: ../../media/Abel-Regular.ttf
+        - type: text
+          value: "{{ states('sensor.restmull_datum') }} "
+          x: 50%
+          anchor: mm
+          "y": 153
+          size: 20
+          color: black
+          font: ../../media/Abel-Regular.ttf
+        - type: line
+          x_start: 256
+          x_end: 256
+          y_start: 35
+          y_end: 175
+          width: 1
+          dashed: true
+          fill: black
+        - type: text
+          value: Gelber Sack
+          x: 267
+          "y": 80
+          size: 16
+          color: black
+        - type: icon
+          value: recycle
+          x: 300
+          "y": 30
+          size: 40
+        - type: text
+          value: "{{ states('sensor.biomull') }}"
+          x: >-
+            {{ (256 + ((128 - (states('sensor.biomull') | length * 8)) / 2)) |
+            int ~ '' }}
+          "y": 110
+          size: 20
+          font: ../../media/Abel-Regular.ttf
+        - type: text
+          value: "{{ states('sensor.biomull_datum') }}"
+          x: >-
+            {{ (256 + ((128 - (states('sensor.biomull_datum') | length * 8.5)) /
+            2)) | int ~ '' }}
+          "y": 145
+          size: 20
+          font: ../../media/Abel-Regular.ttf
+          color: black
+    target:
+      device_id: xxxxxxxxxxxxxxxxx
+    action: open_epaper_link.drawcustom
+mode: restart
