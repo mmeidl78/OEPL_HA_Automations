@@ -1,0 +1,343 @@
+alias: Witz und Zitat des Tages
+description: Zeigt täglich einen Witz + Zitat in 6 Zeilen (stabil formatiert)
+triggers:
+  - trigger: time
+    at: "00:00:01"
+conditions: []
+actions:
+  - data:
+      background: white
+      rotate: 0
+      dry-run: false
+      payload:
+        - type: text
+          value: Witz des Tages
+          x: 5
+          "y": 5
+          size: 16
+          font: ../../media/Bungee.ttf
+          color: black
+        - type: line
+          x_start: 0
+          x_end: 380
+          y_start: 22
+          y_end: 22
+          width: 1
+          dashed: false
+          fill: black
+        - type: text
+          value: "{{ line1 }}"
+          x: 10
+          "y": 28
+          size: 16
+          font: ../../media/Abel-Regular.ttf
+          color: black
+        - type: text
+          value: "{{ line2 }}"
+          x: 10
+          "y": 46
+          size: 16
+          font: ../../media/Abel-Regular.ttf
+          color: black
+        - type: text
+          value: "{{ line3 }}"
+          x: 10
+          "y": 64
+          size: 16
+          font: ../../media/Abel-Regular.ttf
+          color: black
+        - type: line
+          x_start: 0
+          x_end: 380
+          y_start: 108
+          y_end: 108
+          width: 1
+          dashed: false
+          fill: black
+        - type: text
+          value: Zitat des Tages
+          x: 5
+          "y": 92
+          size: 16
+          font: ../../media/Bungee.ttf
+          color: black
+        - type: text
+          value: "{{ quote_line1 }}"
+          x: 10
+          "y": 115
+          size: 16
+          font: ../../media/Abel-Regular.ttf
+          color: black
+        - type: text
+          value: "{{ quote_line2 }}"
+          x: 10
+          "y": 133
+          size: 16
+          font: ../../media/Abel-Regular.ttf
+          color: black
+        - type: text
+          value: "{{ quote_line3 }}"
+          x: 10
+          "y": 151
+          size: 16
+          font: ../../media/Abel-Regular.ttf
+          color: black
+        - type: text
+          value: "{{ as_timestamp(now()) | timestamp_custom('%d%m%H%M') }}"
+          x: 332
+          "y": 2
+          size: 10
+          font: ../../media/GothamRnd_Bold.ttf
+    target:
+      device_id: xxxxxxxxxxxxxxxx
+    action: open_epaper_link.drawcustom
+variables:
+  jokes:
+    - - Warum können Geister so schlecht lügen?
+      - Weil man durch sie hindurchsieht!
+      - Die Ausreden sind durchsichtig wie Glas!
+    - - Was macht ein Pirat am Computer?
+      - Enter drücken - er ist doch ein Seemann!
+      - "Lieblingsprogramm: Arrrrr-drobe Reader!"
+    - - Ein Witz über Zeitreisen.
+      - Aber du wirst ihn nicht mögen.
+      - Du hast gestern schon darüber gelacht!
+    - - Warum tragen Wissenschaftler keine Brille?
+      - Weil sie alles unter die Lupe nehmen!
+      - ""
+    - - Wie nennt man einen Bumerang ohne Rückkehr?
+      - Einen Stock!
+      - ""
+    - - "Mama: Wo ist das Sieb?"
+      - "Fritzchen: Hab es weggeworfen - da waren"
+      - so viele Löcher drin.
+    - - "Wichtige Erkenntnis nach dem Urlaub:"
+      - Gebräunte Haut macht 3kg schwerer!
+      - ""
+    - - "Mann an der Theke:"
+      - Werfen Sie mir einen Fisch zu!
+      - Dann kann ich sagen, ich hätte ihn gefangen!
+    - - "Türklingel: Wir sammeln fürs Kinderheim."
+      - Haben Sie etwas abzugeben?
+      - Kevin, Justin – kommt mal her!
+    - - Warum hat der Computer Hunger?
+      - Er will ständig Cookies!
+      - Aber bitte ohne Viren!
+    - - "Lehrer: 75% haben eine 5 im Test!"
+      - "Fritzchen: So viele sind wir gar nicht!"
+      - ""
+    - - Treffen sich zwei Unsichtbare.
+      - Lange nicht gesehen!
+      - ""
+    - - Egal wie viele CDs du hast,
+      - Carl Benz hatte Mercedes.
+      - ""
+    - - "Mutter zur Tochter am Samstag:"
+      - Wenn du um 11 nicht im Bett bist,
+      - komm nach Hause!
+    - - Blondine wirft Handgranate?
+      - Sicherheitsstöpsel ziehen und zurückwerfen.
+      - ""
+    - - Was ist unter der Kellertreppe?
+      - Eine Blondine beim Verstecken!
+      - ""
+    - - Wie kommt die Blondine an Marmelade?
+      - Sie schält einen Berliner.
+      - ""
+    - - Egal wie viel du Ursula schuldest,
+      - du kannst dir was Von der Leyen.
+      - ""
+    - - Ostfriesen-Toiletten ohne Türen?
+      - Damit keiner durchs Schlüsselloch guckt!
+      - ""
+    - - Wie wird bei Ostfriesen das Bild schärfer?
+      - Sie streuen Pfeffer drauf.
+      - ""
+    - - Ein Bahnwitz...
+      - Weiß nicht, ob der ankommt.
+      - ""
+    - - Warum sind Süchtige pleite?
+      - Zu hohe Fixkosten.
+      - ""
+    - - Was ist weiß und stört beim Frühstück?
+      - Eine Lawine!
+      - ""
+    - - Grün, 6 Beine, fliegt auf dich zu?
+      - Ein Billardtisch!
+      - ""
+    - - "Opas letzte Worte:"
+      - Hör auf an der Leiter zu wackeln!
+      - ""
+    - - Warum stehen Flamingos auf einem Bein?
+      - Sonst fallen sie um!
+      - ""
+    - - Was ist rot und schlecht für Zähne?
+      - Ein Ziegelstein!
+      - ""
+    - - Gelb, ein Arm, kann nicht schwimmen?
+      - Ein Bagger!
+      - ""
+    - - Warum ist Hühnchen nicht vegan?
+      - Weil da Ei drin ist!
+      - ""
+    - - Warum gehen Ameisen nicht in die Kirche?
+      - Weil sie Insekten sind!
+      - ""
+    - - Was ist pink und behindert?
+      - Ein Flamongo!
+      - ""
+    - - "Zwei Fakten über mich:"
+      - 1. Penis wie 6 Nuggets
+      - 2. Hausverbot bei McDonalds
+    - - Schrottwichteln im Kindergarten.
+      - Wir sind jetzt Kevins Eltern.
+      - ""
+    - - Wie nennt man falsche Werfer?
+      - Scheinwerfer!
+      - ""
+    - - "Prostituierte am Bahnhof:"
+      - Macht alles für 30 Euro.
+      - Verlegt jetzt bei mir Laminat.
+  quotes:
+    - - Die einzige Konstante im Leben ist die Veränderung.
+      - Heraklit
+    - - Wer Fehler macht, zeigt Initiative.
+      - Unbekannt
+    - - Optimisten leben länger. Pessimisten länger gesund.
+      - Joachim Fuchsberger
+    - - Der frühe Vogel fängt den Wurm,
+      - aber die zweite Maus bekommt den Käse.
+      - Deutsche Weisheit
+    - - Du bist nie zu alt, um jung zu sein.
+      - Walt Disney
+    - - Leben ist das, was passiert,
+      - während du andere Pläne machst.
+      - John Lennon
+    - - Die Dosis macht das Gift.
+      - Paracelsus
+    - - Man sieht nur mit dem Herzen gut.
+      - Antoine de Saint-Exupéry
+    - - Wer kämpft, kann verlieren.
+      - Wer nicht kämpft, hat schon verloren.
+      - Bertolt Brecht
+    - - Das Gegenteil von gut ist gut gemeint.
+      - Kurt Tucholsky
+    - - Nichts ist mächtiger als eine Idee,
+      - deren Zeit gekommen ist.
+      - Victor Hugo
+    - - Ich bin ein Teil von jener Kraft,
+      - die stets das Böse will und stets das Gute schafft.
+      - Goethe
+    - - Wer andere kennt, ist klug.
+      - Wer sich kennt, ist weise.
+      - Laotse
+    - - Glück ist das Einzige, was sich verdoppelt,
+      - wenn man es teilt.
+      - Albert Schweitzer
+    - - Die Wahrheit ist dem Menschen zumutbar.
+      - Ingeborg Bachmann
+    - - Humor ist der Knopf, der verhindert,
+      - dass uns der Kragen platzt.
+      - Joachim Ringelnatz
+    - - Nur wer erwachsen wird und Kind bleibt,
+      - ist ein Mensch.
+      - Erich Kästner
+    - - Die Grenzen meiner Sprache bedeuten
+      - die Grenzen meiner Welt.
+      - Ludwig Wittgenstein
+    - - Phantasie ist wichtiger als Wissen,
+      - denn Wissen ist begrenzt.
+      - Albert Einstein
+    - - Man liebt zuletzt seine Begierde,
+      - und nicht das Begehrte.
+      - Friedrich Nietzsche
+    - - Die Welt wird nicht bedroht von den Bösen,
+      - sondern von denen, die das zulassen.
+      - Albert Einstein
+    - - Das Leben ist zu kurz für lange Gesichter.
+      - Robert Gernhardt
+    - - Wer keine Visionen hat,
+      - sollte zum Augenarzt gehen.
+      - Helmut Schmidt
+    - - Die Kunst ist, einmal mehr aufzustehen,
+      - als man umgeworfen wird.
+      - Winston Churchill
+    - - Es gibt nichts Gutes,
+      - außer man tut es.
+      - Erich Kästner
+    - - Wer glaubt, etwas zu sein,
+      - hat aufgehört, etwas zu werden.
+      - Sokrates
+    - - Das Geheimnis der Langeweile ist,
+      - alles zu sagen, was man weiß.
+      - Voltaire
+    - - Wer andere beurteilt,
+      - arbeitet nicht an sich selbst.
+      - Buddha
+    - - Weniger ist mehr.
+      - Ludwig Mies van der Rohe
+    - - Die Wahrheit liegt im Auge
+      - des Betrachters.
+      - Mark Twain
+    - - Nichts ist so beständig wie der Wandel.
+      - Heraklit
+    - - Wer die Wahrheit sagt,
+      - braucht ein schnelles Pferd.
+      - Chinesisches Sprichwort
+    - - Man muss noch Chaos in sich haben,
+      - um einen tanzenden Stern zu gebären.
+      - Nietzsche
+    - - "Die größte Entscheidung deines Lebens:"
+      - Dass du es ändern kannst.
+      - Albert Camus
+    - - Tue Gutes und rede darüber.
+      - Konrad Adenauer
+    - - "Das Leben ist wie ein Fahrrad:"
+      - Um die Balance zu halten, musst du fahren.
+      - Albert Einstein
+    - - Die beste Antwort auf Wut ist Schweigen.
+      - Mahatma Gandhi
+    - - Wer die Vergangenheit kontrolliert,
+      - kontrolliert die Zukunft.
+      - George Orwell
+    - - Man sieht die Sonne untergehen,
+      - und doch ist es immer plötzlich.
+      - Pablo Neruda
+    - - Die Freiheit des Einzelnen endet dort,
+      - wo die Freiheit des Anderen beginnt.
+      - Immanuel Kant
+    - - Habe den Mut,
+      - dich deines eigenen Verstandes zu bedienen!
+      - Immanuel Kant
+    - - Alles Einfache ist falsch.
+      - Alles Komplexe ist unbrauchbar.
+      - Paul Valéry
+    - - Wer schreibt, der bleibt.
+      - Altes Sprichwort
+    - - Zweifel sind der Beginn der Weisheit.
+      - René Descartes
+    - - Die Zukunft gehört denen,
+      - die an ihre Träume glauben.
+      - Eleanor Roosevelt
+    - - Handle nur nach der Maxime,
+      - die ein allgemeines Gesetz werden kann.
+      - Immanuel Kant
+    - - Der Weg ist das Ziel.
+      - Konfuzius
+    - - Erst denken, dann handeln.
+      - Altes Sprichwort
+    - - Wer A sagt, muss nicht B sagen.
+      - Er kann auch erkennen, dass A falsch war.
+      - Bertolt Brecht
+    - - Die Kunst liegt darin,
+      - öfter aufzustehen als umgeworfen zu werden.
+      - Konfuzius
+  joke: "{{ jokes | random }}"
+  quote: "{{ quotes | random }}"
+  line1: "{{ joke[0] }}"
+  line2: "{{ joke[1] }}"
+  line3: "{{ joke[2] }}"
+  quote_line1: "{{ quote[0] }}"
+  quote_line2: "{{ quote[1] }}"
+  quote_line3: "{{ quote[2] }}"
+mode: single
