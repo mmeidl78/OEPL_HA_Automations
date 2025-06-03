@@ -689,8 +689,8 @@ actions:
     action: open_epaper_link.drawcustom
     target:
       device_id:
-        - f67c2b3d5fba88f822a23c483c1601e9
-        - fedea9a7526177d2a47326a303b12c7d
+        - DEVICEID
+        - DEVICEID
 mode: single
 variables:
   line_count_0: >-
