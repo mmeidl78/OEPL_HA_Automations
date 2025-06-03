@@ -1,0 +1,720 @@
+alias: 7.5 Inch Dashboard
+description: Dashboard mit Wetter, News, Abfallkalender etc.
+triggers:
+  - trigger: time
+    at: "05:00:00"
+  - trigger: time
+    at: "15:30:00"
+conditions: []
+actions:
+  - alias: Get events 0 day(s) from now
+    data:
+      start_date_time: "{{ today_at('00:00') }}"
+      end_date_time: "{{today_at('00:00') + timedelta(days=1)}}"
+    response_variable: cal_day_0
+    target:
+      entity_id:
+        - calendar.YOURGOOGLECALENDARHERE.COM
+    action: calendar.get_events
+  - alias: Get events 1 day(s) from now
+    data:
+      start_date_time: "{{ today_at('00:00') + timedelta(days=1) }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=2) }}"
+    response_variable: cal_day_1
+    target:
+      entity_id:
+        - calendar.YOURGOOGLECALENDARHERE.COM
+    action: calendar.get_events
+  - alias: Get events 2 day(s) from now
+    data:
+      start_date_time: "{{ today_at('00:00') + timedelta(days=2) }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=3) }}"
+    response_variable: cal_day_2
+    target:
+      entity_id:
+        - calendar.YOURGOOGLECALENDARHERE.COM
+    action: calendar.get_events
+  - alias: Get events 4 day(s) from now
+    data:
+      start_date_time: "{{ today_at('00:00') + timedelta(days=3) }}"
+      end_date_time: "{{ today_at('00:00') + timedelta(days=4) }}"
+    response_variable: cal_day_3
+    target:
+      entity_id:
+        - calendar.YOURGOOGLECALENDARHERE.COM
+    action: calendar.get_events
+  - alias: Extract events from all calendars
+    variables:
+      events_day0: >
+        {{ cal_day_0.values() | map(attribute='events') | list |
+        sum(start=[])}} 
+      events_day1: >
+        {{ cal_day_1.values() | map(attribute='events') | list |
+        sum(start=[])}} 
+      events_day2: >
+        {{ cal_day_2.values() | map(attribute='events') | list |
+        sum(start=[])}} 
+      events_day3: >
+        {{ cal_day_3.values() | map(attribute='events') | list |
+        sum(start=[])}} 
+      count0: |
+        {% if (events_day0 | count == 0) %}
+          1
+        {% else %}
+          {{ events_day0 | count }}
+        {% endif %}
+      count1: |
+        {% if (events_day1 | count == 0) %}
+          1
+        {% else %}
+          {{ events_day1 | count }}
+        {% endif %}
+      count2: |
+        {% if (events_day2 | count == 0) %}
+          1
+        {% else %}
+          {{ events_day2 | count }}
+        {% endif %}
+      count3: |
+        {% if (events_day3 | count == 0) %}
+          1
+        {% else %}
+          {{ events_day3 | count }}
+        {% endif %}
+      gap_header: 230
+      gap_line: 1
+      gap_days: 1
+      gap_title: 16
+      gap_text: 16
+      days:
+        - Montag
+        - Dienstag
+        - Mittwoch
+        - Donnerstag
+        - Freitag
+        - Samstag
+        - Sonntag
+      months:
+        - Januar
+        - Februar
+        - März
+        - April
+        - Mai
+        - Juni
+        - Juli
+        - August
+        - September
+        - Oktober
+        - November
+        - Dezember
+  - alias: Send generated Agenda to OEPL
+    metadata: {}
+    data:
+      rotate: 0
+      dry-run: false
+      payload:
+        - type: rectangle
+          x_start: 0
+          x_end: 800
+          y_start: 0
+          y_end: 25
+          width: 0
+          fill: black
+        - type: text
+          value: >
+            {% set days =
+            {'Monday':'Montag','Tuesday':'Dienstag','Wednesday':'Mittwoch','Thursday':'Donnerstag','Friday':'Freitag','Saturday':'Samstag','Sunday':'Sonntag'}
+            %} {% set months =
+            {'01':'Januar','02':'Februar','03':'März','04':'April','05':'Mai','06':'Juni','07':'Juli','08':'August','09':'September','10':'Oktober','11':'November','12':'Dezember'}
+            %} {% set now_ts = as_timestamp(now()) %} {% set weekday =
+            days[now_ts | timestamp_custom('%A')] %} {% set day = now_ts |
+            timestamp_custom('%d') %} {% set month = months[now_ts |
+            timestamp_custom('%m')] %} {% set year = now_ts |
+            timestamp_custom('%Y') %} {% set time = now_ts |
+            timestamp_custom('%H:%M') %} Heute ist der {{ weekday }}, der {{ day
+            }}. {{ month }} {{ year }}.  Zuletzt aktualisiert {{ time }} Uhr.
+          x: 5
+          "y": 5
+          size: 16
+          font: ../../media/greenscreen.ttf
+          color: white
+        - type: text
+          value: Witz des Tages
+          x: 400
+          "y": 190
+          size: 18
+          font: ../../media/8bitwonder.ttf
+          color: gray
+        - type: text
+          value: >-
+            {% set jokes = [
+              "Wie nennt man einen Bumerang, der nicht zurückkommt? Ein Stock.",
+              "Wie nennt man einen Schneemann in der Wüste? Eine Pfütze.",
+              "Was ist grün u£nd steht vor der Tür? Ein Klopfsalat!",
+              "Was ist orange und klingelt an der Tür? Eine Wanderine!",
+              "Was ist grün, hüpft durch den Wald und ist sehr leise? Ein Ninja-Frosch!",
+              "Warum können Geister so schlecht lügen? Sie sind zu leicht durchschaubar!",
+              "Ein Witz über Zeitreisen. Aber du wirst ihn nicht mögen. Du hast gestern schon darüber gelacht!",
+              "Wie nennt man einen Bumerang der nicht zurück kommt? Einen Stock!",
+              "Mama: Wo ist das Sieb? Fritzchen: Hab es weggeworfen - da waren so viele Löcher drin.",
+              "Wichtige Erkenntnis nach dem Urlaub: Gebräunte Haut macht 3kg schwerer!",
+              "Kunde zum Verkäufer: Werfen Sie mir einen Fisch zu! Verkäufer: Warum? Kunde: Dann kann ich sagen, ich hätte ihn gefangen!",
+              "Dingdong! 'Hi, wir sammeln fürs Kinderheim. Haben Sie etwas abzugeben'? Kevin, Justin – kommt mal her!",
+              "Treffen sich zwei Unsichtbare. Sagt der eine zum anderen: Lange nicht gesehen!",
+              "Egal wie viele CDs du hast, Carl Benz hatte Mercedes.",
+              "Sagt die Mutter zur Tochter: 'Wenn du um 11 nicht im Bett bist, komm nach Hause!'",
+              "Was macht man, wenn eine Blondine eine Handgranate nach einem wirft? Sicherheitsstöpsel ziehen und zurückwerfen!",
+              "Wie kommt die Blondine an Marmelade? Sie schält einen Berliner.",
+              "Egal wie viel du Ursula schuldest - du kannst dir was Von der Leyen.",
+              "Warum haben Ostfriesen-Toiletten keine Türen? Damit keiner durchs Schlüsselloch guckt!",
+              "Wie wird bei Ostfriesen das Bild schärfer? Sie streuen Pfeffer auf den Fernseher!",
+              "Ein Bahnwitz: Weiß aber nicht, ob der ankommt.",
+              "Was ist weiß und stört beim Frühstück? Eine Lawine!",
+              "Was ist Grün, hat 6 Beine und fliegt auf dich zu? Ein Billardtisch!",
+              "Opas letzte Worte: Hör auf an der Leiter zu wackeln!",
+              "Warum stehen Flamingos auf einem Bein? Sonst fallen sie um!",
+              "Was ist rot und schlecht für Zähne? Ein Ziegelstein!",
+              "Was ist gelb, hat einen Arm und kann nicht schwimmen? Ein Bagger!",
+              "Warum ist Hühnchen nicht vegan? Weil da Ei drin ist!",
+              "Warum gehen Ameisen nicht in die Kirche? Weil sie In-Sekten sind!",
+              "Chuck Norris kennt die letzte Ziffer von Pi!",
+              "Was ist pink und behindert? Ein Flamongo!",
+              "Heute war Schrottwichteln im Kindergarten. Wir sind jetzt Kevins Eltern.",
+              "Wie nennt man falsche Werfer? Scheinwerfer!",
+              "Hab mich vorhin hier ausgesperrt! War ganz schön aus dem Häuschen...",
+              "Wie heißt der Bruder vom Werwolf? Warumwolf.",
+              "Kunde: Würde gern einen Baum kaufen. Verkäufer: Sorry, da müssen Sie ins Stammhaus, wir sind nur die Zweigstelle!",
+              "Was ist ein Cowboy ohne Pferd? Ein Sattelschlepper!",
+              "Wie nennt man einen Spanier ohne Auto? Carlos.",
+              "Welche Handwerker essen am meisten? Die Maurer. Sie verputzen ganze Häuser!",
+              "Geht ein Dalmatiner einkaufen. Verkäuferin: Sammeln sie Punkte?",
+              "Was macht ein arbeitsloser Schauspieler? Spielt keine Rolle.",
+              "Was ist die Mehrzahl von Rettich? Meerrettich!",
+              "Mein Hund kennt alle Straßen in- und auswendig! Ich nenne ihn Google Mops.",
+              "Gestern habe ich einen Joghurt fallen lassen. Er war nicht mehr haltbar!",
+              "Was ist grün und sitzt auf dem Klo? Ein Kacktus.",
+              "Wie nennt man Sonnenuntergang auf Finnisch? Hellsinki!",
+              "Treffen sich zwei Holzwürmer. Sagt der eine stolz: Mein Sohn arbeitet jetzt in der Bank.",
+              "Ich habe meinem Freund einen Limonaden-Witz erzählt. Fanta lustig!",
+              "Wenn ein Professor einen Sandwich macht, ist der dann wissenschaftlich belegt?",
+              "Über Tofu macht man keine Witze! Das ist geschmacklos.",
+              "Was macht ein Lebra Kranker in der Disco ? Er lässt die Fetzen fliegen.",
+              "Anton, findest du, dass ich eine schlechte Mutter bin? Ich heiße Paul!",
+              "Was versteht man unter einer Turbine? Nichts. Viel zu laut!",
+              "Anderer Begriff für Abtreibung: Entfernter Verwandter.",
+              "Was sagt ein Chemiker, dem ein Goldbarren auf den Fuß fällt? AU!",
+              "Was ist weiß und stört beim essen? Eine Lawine!",
+              "Wie war die Stimmung in der DDR? Sie hielt sich in Grenzen.",
+              "Was ist weiss und kann nicht fliegen? Waschmaschine.",
+              "Was ist weiß und brummt? Eine Biene Mayo.",
+              "Der Unterschied zwischen Mann und Frau? Wenn Frauen sagen Rich mal! riecht es meistens gut.",
+              "Nichts ist unmöglich! Ach ja? Dann sag mal B mit offenem Mund!",
+              "Wie nennt man einen Lehrling beim Zoll? Filz-Stift!",
+              "Chuck Norris hat den Niagara Fall gelöst.",
+              "Was macht eine Blondine, die sich die Ohren zuhält? Sie versucht, einen Gedanken festzuhalten.",
+              "Wollte Spiderman anrufen, aber der hatte kein Netz.",
+              "Was macht ein Salafist im Treppenhaus? Hochgehen.",
+              "Wie nennt man jemanden, der so tut als würde er etwas werfen? Scheinwerfer!",
+              "Chuck Norris kann durch Null teilen.",
+              "Was liegt am Strand und spricht undeutlich? – Eine Nuschel.",
+              "Google fragt bei Chuck Norris nach der Antwort.",
+              "Genießen Sie Ihren Urlaub vom ersten Tag an in vollen Zügen. Fahren Sie mit der Bahn.",
+              "Kunde: Acht Semmeln bitte. Verkäufer: Soll ich sie einpacken? Kunde: Nein! Ich jongliere damit bis zur Haustür.",
+              "Warum hat man im Wald so schlechten Empfang? Überall nur Zwei-ge!",
+              "Unsere Familie ist sehr musikalisch! Meine Schwester ist schon vor der Geburt flöten gegangen!"
+            ] %} {% set joke = jokes | random %} {% set chunks = [] %} {% set
+            remaining = joke %}
+
+            {# Erste Zeile (sucht den letzten Leerzeichen vor Zeile 40) #} {% if
+            remaining|length > 40 %}
+              {% set cut = remaining[:40].rfind(' ') +1 %}
+              {% set chunks = chunks + [remaining[:cut]|trim] %}
+              {% set remaining = remaining[cut:] %}
+            {% else %}
+              {% set chunks = chunks + [remaining] %}
+              {% set remaining = '' %}
+            {% endif %}
+
+            {# Zweite Zeile #} {% if remaining and chunks|length < 3 %}
+              {% if remaining|length > 40 %}
+                {% set cut = remaining[:40].rfind(' ') +1 %}
+                {% set chunks = chunks + [remaining[:cut]|trim] %}
+                {% set remaining = remaining[cut:] %}
+              {% else %}
+                {% set chunks = chunks + [remaining] %}
+                {% set remaining = '' %}
+              {% endif %}
+            {% endif %}
+
+            {# Dritte Zeile #} {% if remaining and chunks|length < 3 %}
+              {% set chunks = chunks + [remaining[:40]|trim] %}
+            {% endif %}
+
+            {{ chunks|join('\n') }}
+          x: 400
+          "y": 210
+          size: 16
+          font: ../../media/at4.ttf
+          color: black
+        - type: icon
+          value: >
+            {% set state = states('sensor.pirate_weather_daily') %} {% if state
+            == 'clear-night' %}
+              mdi:weather-night
+            {% elif state == 'cloudy' %}
+              mdi:weather-cloudy
+            {% elif state == 'fog' %}
+              mdi:weather-fog
+            {% elif state == 'hail' %}
+              mdi:weather-hail
+            {% elif state == 'lightning' %}
+              mdi:weather-lightning
+            {% elif state == 'lightning-rainy' %}
+              mdi:weather-lightning-rainy
+            {% elif state == 'partlycloudy' %}
+              mdi:weather-partly-cloudy
+            {% elif state == 'pouring' %}
+              mdi:weather-pouring
+            {% elif state == 'rainy' %}
+              mdi:weather-rainy
+            {% elif state == 'snowy' %}
+              mdi:weather-snowy
+            {% elif state == 'snowy-rainy' %}
+              mdi:weather-snowy-rainy
+            {% elif state == 'sunny' %}
+              mdi:weather-sunny
+            {% elif state == 'windy' %}
+              mdi:weather-windy
+            {% elif state == 'windy-variant' %}
+              mdi:weather-windy-variant
+            {% else %}
+              mdi:weather-cloudy
+            {% endif %}
+          x: 5
+          "y": 80
+          size: 50
+          color: black
+        - type: icon
+          value: >
+            {% set state = states('sensor.pirate_weather_daily') %} {% if state
+            == 'clear-night' %}
+              mdi:weather-night
+            {% elif state == 'cloudy' %}
+              mdi:weather-cloudy
+            {% elif state == 'fog' %}
+              mdi:weather-fog
+            {% elif state == 'hail' %}
+              mdi:weather-hail
+            {% elif state == 'lightning' %}
+              mdi:weather-lightning
+            {% elif state == 'lightning-rainy' %}
+              mdi:weather-lightning-rainy
+            {% elif state == 'partlycloudy' %}
+              mdi:weather-partly-cloudy
+            {% elif state == 'pouring' %}
+              mdi:weather-pouring
+            {% elif state == 'rainy' %}
+              mdi:weather-rainy
+            {% elif state == 'snowy' %}
+              mdi:weather-snowy
+            {% elif state == 'snowy-rainy' %}
+              mdi:weather-snowy-rainy
+            {% elif state == 'sunny' %}
+              mdi:weather-sunny
+            {% elif state == 'windy' %}
+              mdi:weather-windy
+            {% elif state == 'windy-variant' %}
+              mdi:weather-windy-variant
+            {% else %}
+              mdi:weather-cloudy
+            {% endif %}
+          x: 195
+          "y": 80
+          size: 50
+          color: black
+        - type: text
+          value: Wettervorhersage
+          x: 5
+          "y": 35
+          size: 18
+          font: ../../media/8bitwonder.ttf
+          color: gray
+        - type: text
+          value: Heute
+          x: 5
+          "y": 59
+          size: 16
+          font: ../../media/at4.ttf
+        - type: text
+          value: Morgen
+          x: 195
+          "y": 59
+          size: 16
+          font: ../../media/at4.ttf
+          color: black
+        - type: text
+          value: >-
+            {{ state_attr('sensor.pirate_weather_daily',
+            'forecast')[0].temperature | round(0)}}°C
+          x: 70
+          "y": 85
+          size: 26
+          font: ../../media/at4.ttf
+        - type: text
+          value: >-
+            {{ state_attr('sensor.pirate_weather_daily', 'forecast')[0].templow
+            | round(0)}}°C
+          x: 70
+          "y": 115
+          size: 16
+          font: ../../media/at4.ttf
+        - type: text
+          value: >-
+            {% set rain = state_attr('sensor.pirate_weather_daily',
+            'forecast')[0].precipitation_probability | round(0) %} Regen? {{
+            rain }}%
+          x: 5
+          "y": 140
+          size: 16
+          font: ../../media/at4.ttf
+        - type: text
+          value: >-
+            {{ state_attr('sensor.pirate_weather_daily',
+            'forecast')[1].temperature | round(0)}}°C
+          x: 255
+          "y": 85
+          size: 26
+          font: ../../media/at4.ttf
+        - type: text
+          value: >-
+            {{ state_attr('sensor.pirate_weather_daily', 'forecast')[1].templow
+            | round(0)}}°C
+          x: 265
+          "y": 115
+          size: 16
+          font: ../../media/at4.ttf
+        - type: text
+          value: >-
+            {% set rain = state_attr('sensor.pirate_weather_daily',
+            'forecast')[1].precipitation_probability | round(0) %} Regen? {{
+            rain }}%
+          x: 195
+          "y": 140
+          size: 16
+          font: ../../media/at4.ttf
+        - type: line
+          x_start: 165
+          x_end: 165
+          y_start: 60
+          y_end: 155
+          width: 1
+          fill: black
+          dashed: true
+        - type: text
+          value: "{{ states('sensor.wohnzimmer_temperatur_2') | int }}°C"
+          x: 65
+          "y": 175
+          size: 16
+          font: ../../media/at4.ttf
+        - type: icon
+          value: mdi:sofa
+          x: 10
+          "y": 160
+          size: 40
+        - type: text
+          value: "{{ states('sensor.terrasse_temperatur') | int }}°C"
+          x: 185
+          "y": 175
+          size: 16
+          font: ../../media/at4.ttf
+        - type: icon
+          value: mdi:home-export-outline
+          x: 130
+          "y": 160
+          size: 40
+        - type: text
+          value: Google Kalender
+          x: 5
+          "y": 210
+          size: 18
+          font: ../../media/8bitwonder.ttf
+          color: gray
+        - type: text
+          value: >-
+            {{ days[today_at('00:00').weekday()] }} {{ today_at('00:00').day }}.
+            {{ months[today_at('00:00').month-1] }} 
+          font: ../../media/Linik_Bold.ttf
+          x: 5
+          "y": |
+            {{ gap_header + 2.5 * gap_line}}
+          size: 16
+          color: black
+        - type: multiline
+          value: |
+            {% if events_day0 | count > 0 %}
+              {% for event in (events_day0 | sort(attribute='start') | list) -%} 
+                {% if as_timestamp(event.start) | timestamp_custom('%H:%M') == "00:00"%}
+                  #24h - {{ event.summary | regex_replace(find='[^\x00-\x7F]', replace='') }}
+                {% else %}
+                  #{% if as_timestamp(event.start) | timestamp_custom('%d%m%y') != as_timestamp(event.end) | timestamp_custom('%d%m%y') %}{{ days[(as_timestamp(event.start) | timestamp_custom('%w') | int)-1][:3] }} {% endif %}{{as_timestamp(event.start) | timestamp_custom('%H:%M') }} - {% if as_timestamp(event.start) | timestamp_custom('%d%m%y') != as_timestamp(event.end) | timestamp_custom('%d%m%y') %}{{ days[(as_timestamp(event.end) | timestamp_custom('%w') | int)-1][:3] }}{% endif %} {{as_timestamp(event.end) | timestamp_custom('%H:%M') }}: {{ event.summary | regex_replace(find='[^\x00-\x7F]', replace='') }}
+                {% endif -%}
+              {% endfor -%}
+            {% else %}
+              #Ingenting
+            {% endif -%}
+          font: ../../media/at4.ttf
+          start_y: |
+            {{ gap_header + gap_title + 0 * gap_line}}
+          delimiter: "#"
+          size: 16
+          offset_y: 16
+          x: 5
+        - type: text
+          value: >-
+            {{ days[(today_at('00:00')+ timedelta(days=1)).weekday()] }} {{
+            (today_at('00:00') + timedelta(days=1)).day }}. {{
+            months[(today_at('00:00')+ timedelta(days=1)).month-1] }}
+          font: ../../media/Linik_Bold.ttf
+          x: 5
+          "y": |
+            {{ gap_header + gap_title + gap_days + ((count0 + 1) * gap_text)}}
+          size: 16
+          color: black
+        - type: multiline
+          value: |
+            {% if events_day1 | count > 0 %}
+              {% for event in (events_day1 | sort(attribute='start') | list) -%} 
+                {% if as_timestamp(event.start) | timestamp_custom('%H:%M') == "00:00"%}
+                  #24h - {{ event.summary | regex_replace(find='[^\x00-\x7F]', replace='') }}
+                {% else %}
+                  #{% if as_timestamp(event.start) | timestamp_custom('%d%m%y') != as_timestamp(event.end) | timestamp_custom('%d%m%y') %}{{ days[(as_timestamp(event.start) | timestamp_custom('%w') | int)-1][:3] }} {% endif %}{{as_timestamp(event.start) | timestamp_custom('%H:%M') }} - {% if as_timestamp(event.start) | timestamp_custom('%d%m%y') != as_timestamp(event.end) | timestamp_custom('%d%m%y') %}{{ days[(as_timestamp(event.end) | timestamp_custom('%w') | int)-1][:3] }}{% endif %} {{as_timestamp(event.end) | timestamp_custom('%H:%M') }}: {{ event.summary | regex_replace(find='[^\x00-\x7F]', replace='') }}
+                {% endif -%}
+              {% endfor -%}
+            {% else %}
+              #Ingenting
+            {% endif -%}
+          font: ../../media/at4.ttf
+          start_y: >
+            {{ gap_header + 1.5 * gap_title + 1 * gap_line + gap_days + ((count0
+            + 1 ) * gap_text)}}
+          offset_y: 16
+          delimiter: "#"
+          size: 16
+          x: 5
+          color: black
+        - type: text
+          visible: "{{true if (count0+count1+count2) < 9 else false}}"
+          value: >-
+            {{ days[(today_at('00:00')+ timedelta(days=2)).weekday()] }} {{
+            (today_at('00:00') + timedelta(days=2)).day }}. {{
+            months[(today_at('00:00')+ timedelta(days=2)).month-1] }} 
+          font: ../../media/Linik_Bold.ttf
+          x: 5
+          "y": >
+            {{ gap_header + 2 * gap_title + 4 * gap_line + gap_days + +
+            (((count0 + 1) + (count1 + 1)) * gap_text)}}
+          size: 16
+          color: black
+        - type: multiline
+          value: |
+            {% if events_day2 | count > 0 %}
+              {% for event in (events_day2 | sort(attribute='start') | list) -%} 
+                {% if as_timestamp(event.start) | timestamp_custom('%H:%M') == "00:00"%}
+                  #24h - {{ event.summary | regex_replace(find='[^\x00-\x7F]', replace='') }}
+                {% else %}
+                  #{% if as_timestamp(event.start) | timestamp_custom('%d%m%y') != as_timestamp(event.end) | timestamp_custom('%d%m%y') %}{{ days[(as_timestamp(event.start) | timestamp_custom('%w') | int)-1][:3] }} {% endif %}{{as_timestamp(event.start) | timestamp_custom('%H:%M') }} - {% if as_timestamp(event.start) | timestamp_custom('%d%m%y') != as_timestamp(event.end) | timestamp_custom('%d%m%y') %}{{ days[(as_timestamp(event.end) | timestamp_custom('%w') | int)-1][:3] }}{% endif %} {{as_timestamp(event.end) | timestamp_custom('%H:%M') }}: {{ event.summary | regex_replace(find='[^\x00-\x7F]', replace='') }}
+                {% endif -%}
+              {% endfor -%}
+            {% else %}
+              #Ingenting
+            {% endif -%}
+          font: ../../media/at4.ttf
+          start_y: >
+            {{ gap_header + 3 * gap_title + 1 * gap_line + gap_days + (((count0
+            + 1) + (count1 + 1)) * gap_text)}}
+          offset_y: 16
+          delimiter: "#"
+          size: 16
+          x: 5
+          color: black
+          visible: "{{true if (count0+count1+count2) < 9 else false}}"
+        - type: text
+          visible: "{{true if (count0+count1+count2+count3) < 7 else false}}"
+          value: >-
+            {{ days[(today_at('00:00') + timedelta(days=3)).weekday()] }} {{
+            (today_at('00:00') + timedelta(days=3)).day }}. {{
+            months[(today_at('00:00')+ timedelta(days=3)).month-1] }} 
+          font: ../../media/Linik_Bold.ttf
+          x: 5
+          "y": >
+            {{ gap_header + 3 * gap_title + 4 * gap_line + gap_days + +
+            (((count0 + 1) + (count1 + 1) + (count2 + 1)) * gap_text)}}
+          size: 16
+          color: black
+        - type: multiline
+          value: |
+            {% if events_day3 | count > 0 %}
+              {% for event in (events_day3 | sort(attribute='start') | list) -%} 
+                {% if as_timestamp(event.start) | timestamp_custom('%H:%M') == "00:00"%}
+                  #24h - {{ event.summary | regex_replace(find='[^\x00-\x7F]', replace='') }}
+                {% else %}
+                  #{% if as_timestamp(event.start) | timestamp_custom('%d%m%y') != as_timestamp(event.end) | timestamp_custom('%d%m%y') %}{{ days[(as_timestamp(event.start) | timestamp_custom('%w') | int)-1][:3] }} {% endif %}{{as_timestamp(event.start) | timestamp_custom('%H:%M') }} - {% if as_timestamp(event.start) | timestamp_custom('%d%m%y') != as_timestamp(event.end) | timestamp_custom('%d%m%y') %}{{ days[(as_timestamp(event.end) | timestamp_custom('%w') | int)-1][:3] }}{% endif %} {{as_timestamp(event.end) | timestamp_custom('%H:%M') }}: {{ event.summary | regex_replace(find='[^\x00-\x7F]', replace='') }}
+                {% endif -%}
+              {% endfor -%}
+            {% else %}
+              #Ingenting
+            {% endif -%}
+          font: ../../media/at4.ttf
+          start_y: >
+            {{ gap_header + 4 * gap_title + 1 * gap_line + gap_days + (((count0
+            + 1) + (count1 + 1) + (count2 + 1)) * gap_text)}}
+          offset_y: 16
+          delimiter: "#"
+          size: 16
+          x: 5
+          visible: "{{true if (count0+count1+count2+count3) < 7 else false}}"
+          color: black
+        - type: text
+          value: Abfallkalender
+          x: 400
+          "y": 35
+          size: 18
+          font: ../../media/8bitwonder.ttf
+          color: gray
+        - type: text
+          value: "Biomüll-Abholung: {{ states('sensor.biomull') }}"
+          x: 450
+          "y": 65
+          size: 16
+          color: black
+          font: ../../media/at4.ttf
+        - type: icon
+          value: bio
+          x: 400
+          "y": 50
+          size: 40
+        - type: text
+          value: "Restmüll-Abholung: {{ states('sensor.restmull') }}"
+          x: 450
+          "y": 105
+          size: 16
+          color: black
+          font: ../../media/at4.ttf
+        - type: icon
+          value: trash-can-outline
+          x: 400
+          "y": 90
+          size: 40
+        - type: text
+          value: "Gelber Sack-Abholung: {{ states('sensor.gelber_sack') }}"
+          x: 450
+          "y": 145
+          size: 16
+          color: black
+          font: ../../media/at4.ttf
+        - type: icon
+          value: recycle
+          x: 400
+          "y": 130
+          size: 40
+        - type: text
+          value: Schlagzeilen
+          x: 400
+          "y": 300
+          size: 17
+          font: ../../media/8bitwonder.ttf
+          color: gray
+        - type: text
+          value: >-
+            {{ state_attr('sensor.tagesschau', 'entries')[0].title  |
+            regex_replace('(.{1,40})(\\s+|$)', '\\1\n') }}
+          x: 400
+          "y": "{{ y1 }}"
+          color: black
+          size: 14
+          font: ../../media/at4.ttf
+          spacing: 0.5
+        - type: text
+          value: >-
+            {{ state_attr('sensor.tagesschau', 'entries')[1].title  |
+            regex_replace('(.{1,40})(\\s+|$)', '\\1\n') }}
+          x: 400
+          "y": "{{ y2 }}"
+          color: black
+          font: ../../media/at4.ttf
+          size: 14
+          spacing: 0.5
+        - type: text
+          value: >-
+            {{ state_attr('sensor.tagesschau', 'entries')[2].title  |
+            regex_replace('(.{1,30})(\\s+|$)', '\\1\n') }}
+          x: 400
+          "y": "{{ y3 }}"
+          color: black
+          font: ../../media/at4.ttf
+          size: 14
+          spacing: 0.5
+        - type: text
+          value: >-
+            {{ state_attr('sensor.tagesschau', 'entries')[3].title  |
+            regex_replace('(.{1,30})(\\s+|$)', '\\1\n') }}
+          x: 400
+          "y": "{{ y4 }}"
+          color: black
+          font: ../../media/at4.ttf
+          size: 14
+          spacing: 0.5
+        - type: rectangle
+          x_start: 0
+          x_end: 800
+          y_start: 455
+          y_end: 480
+          width: 0
+          fill: black
+        - type: text
+          value: Wolle gratitsch WLAN? Guckstu da ->
+          x: 365
+          "y": 461
+          size: 14
+          font: ../../media/greenscreen.ttf
+          color: white
+        - type: qrcode
+          data: WIFI:S:YOURWLANSSID;T:WPA;P:YOURWLANPASSWORD;;
+          x: 710
+          "y": 395
+          boxsize: 2
+          border: 2
+          color: black
+          bgcolor: white
+    action: open_epaper_link.drawcustom
+    target:
+      device_id:
+        - f67c2b3d5fba88f822a23c483c1601e9
+        - fedea9a7526177d2a47326a303b12c7d
+mode: single
+variables:
+  line_count_0: >-
+    {{ (state_attr('sensor.tagesschau', 'entries')[0].title  |
+    regex_replace('(.{1,40})(\\s+|$)', '\\1\n')  | replace('\n',
+    '§')).split('§') | length }}
+  line_count_1: >-
+    {{ (state_attr('sensor.tagesschau', 'entries')[1].title  |
+    regex_replace('(.{1,40})(\\s+|$)', '\\1\n')  | replace('\n',
+    '§')).split('§') | length }}
+  line_count_2: >-
+    {{ (state_attr('sensor.tagesschau', 'entries')[2].title  |
+    regex_replace('(.{1,30})(\\s+|$)', '\\1\n')  | replace('\n',
+    '§')).split('§') | length }}
+  line_count_3: >-
+    {{ (state_attr('sensor.tagesschau', 'entries')[3].title  |
+    regex_replace('(.{1,30})(\\s+|$)', '\\1\n')  | replace('\n',
+    '§')).split('§') | length }}
+  line_count_4: >-
+    {{ (state_attr('sensor.tagesschau', 'entries')[4].title  |
+    regex_replace('(.{1,45})(\\s+|$)', '\\1\n')  | replace('\n',
+    '§')).split('§') | length }}
+  y1: 325
+  y2: "{{ y1 + (line_count_0 * 14) }}"
+  y3: "{{ y2 + (line_count_1 * 14) }}"
+  y4: "{{ y3 + (line_count_2 * 14) }}"
+  y5: "{{ y4 + (line_count_3 * 14) }}"
